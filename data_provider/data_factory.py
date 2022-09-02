@@ -6,17 +6,22 @@ data_dict = {
     'ETTh2': Dataset_ETT_hour,
     'ETTm1': Dataset_ETT_minute,
     'ETTm2': Dataset_ETT_minute,
-    'custom': Dataset_Custom,
+    'electricity': Dataset_Custom,
+    'exchange_rate': Dataset_Custom,
+    'illness': Dataset_Custom,
+    'traffic': Dataset_Custom,
+    'weather': Dataset_Custom,
 }
 
 
 def data_provider(args, flag):
     Data = data_dict[args.data]
     timeenc = 0 if args.embed != 'timeF' else 1
+    data_path = f'{args.data}.csv'
 
     if flag == 'test':
         shuffle_flag = False
-        drop_last = True
+        drop_last = False #True
         batch_size = args.batch_size
         freq = args.freq
     elif flag == 'pred':
@@ -27,13 +32,13 @@ def data_provider(args, flag):
         Data = Dataset_Pred
     else:
         shuffle_flag = True
-        drop_last = True
+        drop_last = False #True
         batch_size = args.batch_size
         freq = args.freq
 
     data_set = Data(
         root_path=args.root_path,
-        data_path=args.data_path,
+        data_path=data_path,
         flag=flag,
         size=[args.seq_len, args.label_len, args.pred_len],
         features=args.features,

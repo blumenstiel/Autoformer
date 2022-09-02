@@ -64,14 +64,21 @@ class TemporalEmbedding(nn.Module):
     def __init__(self, d_model, embed_type='fixed', freq='h'):
         super(TemporalEmbedding, self).__init__()
 
-        minute_size = 4
+        if freq == 't' or freq == 'min':
+            # standard 15 min reporting
+            minute_size = 4
+        elif 'min' in freq:
+            # custom steps
+            minute_size = int(60 / int(freq[:-3]))
+        else:
+            minute_size = None
         hour_size = 24
         weekday_size = 7
         day_size = 32
         month_size = 13
 
         Embed = FixedEmbedding if embed_type == 'fixed' else nn.Embedding
-        if freq == 't':
+        if minute_size is not None:
             self.minute_embed = Embed(minute_size, d_model)
         self.hour_embed = Embed(hour_size, d_model)
         self.weekday_embed = Embed(weekday_size, d_model)

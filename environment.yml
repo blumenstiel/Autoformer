@@ -1,14 +1,20 @@
-name: autoformer
+name: af
 channels:
-  - conda-forge
+  # - conda-forge
   - pytorch
   - defaults
 dependencies:
-  - python=3.7
-  - pip
+  - python
+  - cudatoolkit=11.3
+  - pytorch
+  - torchvision
+  - torchaudio
   - matplotlib
   - numpy
   - pandas
   - scikit-learn
+  - pip
   - pip:
-    - torch==1.9.0
+    - neptune-client
+    - entmax
+#    - torch==1.9.0
