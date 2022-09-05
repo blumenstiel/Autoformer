@@ -5,6 +5,41 @@ from exp.exp_main import Exp_Main
 import random
 import numpy as np
 
+var_dict = {
+    'electricity': 321,
+    'ETTm1': 7,
+    'ETTm2': 7,
+    'ETTh1': 7,
+    'ETTh2': 7,
+    'exchange_rate': 8,
+    'illness': 7,
+    'traffic': 862,
+    'weather': 21,
+}
+
+freq_dict = {
+    'electricity': 'h',
+    'ETTm1': 't',
+    'ETTm2': 't',
+    'ETTh1': 'h',
+    'ETTh2': 'h',
+    'exchange_rate': 'd',
+    'illness': 'd',
+    'traffic': 'h',
+    'weather': '10min',
+}
+
+path_dict = {
+    'electricity': 'data/electricity/',
+    'ETTm1': 'data/ETT-small/',
+    'ETTm2': 'data/ETT-small/',
+    'ETTh1': 'data/ETT-small/',
+    'ETTh2': 'data/ETT-small/',
+    'exchange_rate': 'data/exchange_rate/',
+    'illness': 'data/illness/',
+    'traffic': 'data/traffic/',
+    'weather': 'data/weather/',
+}
 
 def main():
     fix_seed = 2021
@@ -16,7 +51,7 @@ def main():
 
     # basic config
     parser.add_argument('--is_training', type=int, default=1, help='status')
-    parser.add_argument('--model_id', type=str, default='test', help='model id')
+    parser.add_argument('--model_id', type=str, default='', help='model id')
     parser.add_argument('--model', type=str, default='Autoformer',
                         help='model name, options: [Autoformer, Informer, Transformer]')
 
@@ -63,11 +98,11 @@ def main():
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
     parser.add_argument('--itr', type=int, default=1, help='experiments times')
     parser.add_argument('--epochs', type=int, default=10, help='train epochs')
-    parser.add_argument('--batch_size', type=int, default=256, help='batch size of train input data')
+    parser.add_argument('--batch_size', type=int, default=32, help='batch size of train input data')
     parser.add_argument('--patience', type=int, default=5, help='early stopping patience')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
     parser.add_argument('--des', type=str, default='Exp', help='exp description')
-    parser.add_argument('--loss', type=str, default='quantile_loss', help='loss function')  # MSE = L2 Loss
+    parser.add_argument('--loss', type=str, default='mse', help='loss function')  # MSE = L2 Loss
     parser.add_argument('--lradj', type=str, default='type1', help='adjust learning rate')
     parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
 
@@ -102,6 +137,15 @@ def main():
         args.adv_training = True
         args.attention_type = 'entmax15'
         args.loss = 'quantile_loss'
+
+    if args.data in var_dict.keys():
+        # Get number of variables
+        args.enc_in = var_dict[args.data]
+        args.dec_in = var_dict[args.data]
+        args.c_out = var_dict[args.data]
+        # Get data path and frequency
+        args.root_path = path_dict[args.data]
+        args.freq = freq_dict[args.data]
 
     print('Args in experiment:')
     print(args)

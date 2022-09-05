@@ -1,6 +1,6 @@
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from models import Informer, Autoformer, Transformer, AST, Discriminator #, Reformer
+from models import Informer, Autoformer, Transformer, AST, Discriminator, NST  #, Reformer
 from utils.tools import EarlyStopping, adjust_learning_rate, visual
 from utils.metrics import metric
 
@@ -29,6 +29,7 @@ class Exp_Main(Exp_Basic):
             'Transformer': Transformer,
             'Informer': Informer,
             'AST': AST,
+            'NST': NST,
             #'Reformer': Reformer,
         }
         model = model_dict[self.args.model].Model(self.args).float()
@@ -61,9 +62,9 @@ class Exp_Main(Exp_Basic):
         if loss == 'mse':
             criterion = nn.MSELoss()
         elif loss == 'quantile_loss':
-            criterion = MyTransformer.quantile_loss
+            criterion = AST.quantile_loss
         elif loss == 'normalized_quantile_loss':
-            criterion = MyTransformer.normalized_quantile_loss
+            criterion = AST.normalized_quantile_loss
         return criterion
 
     def _init_neptune(self, name=None):
